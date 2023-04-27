@@ -11,7 +11,8 @@ const schema = buildSchema(`
     search(query: String): [Question],
     userQuestions(query: String): [Question],
     addQuestion(user: String, question: String, subscribe: Boolean): Question,
-    page(query: Int): Page
+    page(query: Int): Page,
+    faq(nothing: String): [Question],
   }
 
   type Question {
@@ -41,7 +42,7 @@ const root = {
     return sortByDate(questions);
   },
   search: async ({ query }) => {
-    const questions = await Question.find({ $or: [{ question: { "$regex": query, "$options": "i" } }, { anwwer: { "$regex": query, "$options": "i" } }] })
+    const questions = await Question.find({ $or: [{ question: { "$regex": query, "$options": "i" } }, { answer: { "$regex": query, "$options": "i" } }] })
     return sortByDate(questions);
   },
   addQuestion: async ({ user, question, subscribe }) => {
@@ -67,6 +68,10 @@ const root = {
       questions: questions.slice(query * pageLength, (query + 1) * pageLength),
       maxPage: Math.floor(questions.length / pageLength)
     }
+  },
+  faq: async () => {
+    const questions = await Question.find({ isFaq: true })
+    return questions
   }
 }
 
