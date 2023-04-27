@@ -95,7 +95,7 @@ const root = {
     return sortByDate(db.filter(value => value.user === query));
   },
   search: ({ query }) => {
-    const pool =[...faq, ...db];
+    const pool = [...faq, ...db];
     return sortByDate(pool.
       filter(value => value.question.toLowerCase().includes(query.toLowerCase())
         || value.answer?.toLowerCase().includes(query.toLowerCase())))
@@ -113,7 +113,9 @@ const root = {
 }
 
 const app = express()
-app.use(cors());
+app.use(cors({
+  origin: ["http://localhost:3000", "https://next-mainliber.vercel.app/"]
+}));
 app.use(
   "/graphql",
   graphqlHTTP({
