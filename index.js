@@ -114,7 +114,7 @@ const root = {
 
 const app = express()
 app.use(cors({
-  origin: ["http://localhost:3000", "https://next-mainliber.vercel.app/"]
+  origin: ["http://localhost:3000", "https://next-mainliber.vercel.app"]
 }));
 app.use(
   "/graphql",
@@ -126,4 +126,3 @@ app.use(
 )
 
 app.listen(4000)
-console.log("Running a GraphQL API server at http://localhost:4000/graphql")
