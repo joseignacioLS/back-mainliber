@@ -11,8 +11,11 @@ const schema = buildSchema(`
     search(query: String): [Question],
     userQuestions(query: String): [Question],
     addQuestion(user: String, question: String, subscribe: Boolean): Question,
-    page(query: Int): Page,
+    page(query: Int, onlyUnanswered: Boolean, showFaq: Boolean): Page,
     faq(nothing: String): [Question],
+    answerQuestion(id: String, answer: String): [Question],
+    deleteQuestion(id: String): [Question],
+    updateFaq(id: String, isFaq: Boolean): Question,
   }
 
   type Question {
@@ -50,19 +53,30 @@ const root = {
       user,
       question,
       subscribe,
+      answer: "",
+      isFaq: false,
       date: new Date()
     })
 
     const savedQuestion = await newQuestion.save();
+    //enviar email al usuario confirmando
     return savedQuestion;
   },
   answerQuestion: async ({ id, answer }) => {
     const question = await Question.findByIdAndUpdate(id, { answer })
+    // enviar email al usuario confirmando
     return question
   },
-  page: async ({ query }) => {
+  page: async ({ query, onlyUnanswered, showFaq }) => {
     const pageLength = 10;
-    const questions = await Question.find();
+    let searchQuery = {}
+    if (onlyUnanswered) {
+      searchQuery = { ...searchQuery, answer: "" }
+    }
+    if (!showFaq) {
+      searchQuery = { ...searchQuery, isFaq: false }
+    }
+    const questions = await Question.find(searchQuery);
 
     return {
       questions: questions.slice(query * pageLength, (query + 1) * pageLength),
@@ -72,6 +86,21 @@ const root = {
   faq: async () => {
     const questions = await Question.find({ isFaq: true })
     return questions
+  },
+  deleteQuestion: async ({ id }) => {
+    const question = await Question.findByIdAndDelete(id);
+    return question;
+  },
+  updateFaq: async ({ id, isFaq }) => {
+    const extra = isFaq ? {
+      date: new Date("2000/01/01"),
+      user: "admin",
+      subscribe: false
+    } : {}
+    const question = await Question.findByIdAndUpdate(id, {
+      isFaq, ...extra
+    })
+    return question
   }
 }
 
