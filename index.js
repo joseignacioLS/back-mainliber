@@ -41,7 +41,7 @@ const root = {
 
 const app = express()
 app.use(cors({
-  origin: ["http://localhost:3000", "https://next-mainliber.vercel.app"]
+  origin: ["http://localhost:3000", "https://next-mainliber.vercel.app", "https://mainliber.netlify.app"]
 }));
 app.use(
   "/graphql",

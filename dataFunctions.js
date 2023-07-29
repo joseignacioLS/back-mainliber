@@ -16,6 +16,7 @@ export const search = async ({ query }) => {
   return sortByDate(questions);
 }
 export const addQuestion = async ({ user, question, subscribe }) => {
+  console.log(question)
   const newQuestion = await new Question({
     user,
     question,
